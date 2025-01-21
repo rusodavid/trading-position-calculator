@@ -1,0 +1,87 @@
+<div>
+  <h1>Bienvenido al Calculador de Posiciones</h1>
+
+  <section>
+    <h2>Datos globales</h2>
+    <div>
+      <label for="patrimonio">Patrimonio dedicado</label>
+      <input id="patrimonio" type="number" [(ngModel)]="patrimonio" (input)="calcularTodo()" />
+      <label for="precioCompra">Precio de Compra:</label>
+      <input id="precioCompra" type="number" [(ngModel)]="precioCompra" (input)="calcularTodo()" />
+    </div>
+  </section>
+
+  <!-- Sección 1: Riesgo -->
+  <section>
+    <h2>1 - Riesgo</h2><textarea>Posicion * medida de riesgo = Riesgo por posicion * patrimonio</textarea>
+    <label>Medida de riesgo: </label>
+    <label>
+      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.005)" [checked]="riesgoPorcentaje === 0.005" />
+      0.5% (Principiante)
+    </label>
+    <label>
+      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.001)" [checked]="riesgoPorcentaje === 0.001" />
+      1% (Intermedio)
+    </label>
+    <label>
+      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.002)" [checked]="riesgoPorcentaje === 0.002" />
+      2% (Experto)
+    </label>
+
+    <div>
+      <label for="stop">Stop:</label>
+      <input id="stop" type="number" [(ngModel)]="stop" (input)="calcularRiesgo()"/>
+
+      <label for="tamanioPosicionRiesgo">Tamaño posicion riesgo:</label>
+      <input id="tamanioPosicionRiesgo" type="number" [value]="riesgoCalculado || ''" readonly /> acciones
+    </div>
+  </section>
+
+  <!-- Sección 2: Volatilidad -->
+  <section>
+    <h2>2 - Volatilidad - Rango promedio Verdadero (ATR)</h2><textarea>Posicion * medida volatilidad = volatilidad posicion * patrimonio</textarea>
+    <label>Volatilidad posicion: </label>
+    <label>
+      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.005)" [checked]="volatilidadPorcentaje === 0.005" />
+      0.5% (Principiante)
+    </label>
+    <label>
+      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.0075)" [checked]="volatilidadPorcentaje === 0.0075" />
+      0.75% (Intermedio)
+    </label>
+    <label>
+      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.0015)" [checked]="volatilidadPorcentaje === 0.0015" />
+      1.5% (Experto)
+    </label>
+    <div>
+      <label for="atr">ATR:</label>
+      <input id="atr" type="number" [(ngModel)]="atr" (input)="calcularVolatilidad()" />
+
+      <label for="tamanioPosicionVolatilidad">Tamaño posicion volatilidad:</label>
+      <input id="tamanioPosicionVolatilidad" type="number" [value]="volatilidadCalculada || ''" readonly /> acciones
+    </div>
+  </section>
+
+  <!-- Sección 3: Capital -->
+  <section>
+    <h2>3 - Capital</h2><textarea>Posicion * precio = capital posicion * patrimonio</textarea>
+    <label>Capital posicion: </label>
+    <label>
+      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.01)" [checked]="capitalPorcentaje === 0.01" />
+      1% (Principiante)
+    </label>
+    <label>
+      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.02)" [checked]="capitalPorcentaje === 0.02" />
+      2% (Intermedio)
+    </label>
+    <label>
+      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.05)" [checked]="capitalPorcentaje === 0.055" />
+      5% (Experto)
+    </label>
+    <div>
+      <label for="tamanioPosicionCapital">Tamaño posicion capital:</label>
+      <input id="tamanioPosicionCapital" type="number" [value]="capitalCalculado || ''" readonly /> acciones
+    </div>
+  </section>
+</div>
+
