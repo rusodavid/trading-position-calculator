@@ -13,24 +13,25 @@
 
   <!-- Sección 1: Riesgo -->
   <section>
-    <h2>1 - Riesgo</h2><textarea>Posicion * medida de riesgo = Riesgo por posicion * patrimonio</textarea>
+    <h2>1 - Riesgo</h2>
+    <p>Posicion * medida de riesgo = Riesgo por posicion * patrimonio</p>
     <label>Medida de riesgo: </label>
     <label>
-      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.005)" [checked]="riesgoPorcentaje === 0.005" />
+      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.005; calcularTodo()" [checked]="riesgoPorcentaje === 0.005" />
       0.5% (Principiante)
     </label>
     <label>
-      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.001)" [checked]="riesgoPorcentaje === 0.001" />
+      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.01; calcularTodo()" [checked]="riesgoPorcentaje === 0.01" />
       1% (Intermedio)
     </label>
     <label>
-      <input type="radio" name="riesgo" (change)="actualizarRiesgoPorcentaje(0.002)" [checked]="riesgoPorcentaje === 0.002" />
+      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.02; calcularTodo()" [checked]="riesgoPorcentaje === 0.02" />
       2% (Experto)
     </label>
 
     <div>
       <label for="stop">Stop:</label>
-      <input id="stop" type="number" [(ngModel)]="stop" (input)="calcularRiesgo()"/>
+      <input id="stop" type="number" [(ngModel)]="stop" (input)="calcularTodo()" />
 
       <label for="tamanioPosicionRiesgo">Tamaño posicion riesgo:</label>
       <input id="tamanioPosicionRiesgo" type="number" [value]="riesgoCalculado || ''" readonly /> acciones
@@ -39,23 +40,24 @@
 
   <!-- Sección 2: Volatilidad -->
   <section>
-    <h2>2 - Volatilidad - Rango promedio Verdadero (ATR)</h2><textarea>Posicion * medida volatilidad = volatilidad posicion * patrimonio</textarea>
+    <h2>2 - Volatilidad - Rango promedio Verdadero (ATR)</h2>
+    <p>Posicion * medida volatilidad = volatilidad posicion * patrimonio</p>
     <label>Volatilidad posicion: </label>
     <label>
-      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.005)" [checked]="volatilidadPorcentaje === 0.005" />
+      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.005; calcularTodo()" [checked]="volatilidadPorcentaje === 0.005" />
       0.5% (Principiante)
     </label>
     <label>
-      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.0075)" [checked]="volatilidadPorcentaje === 0.0075" />
+      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.0075; calcularTodo()" [checked]="volatilidadPorcentaje === 0.0075" />
       0.75% (Intermedio)
     </label>
     <label>
-      <input type="radio" name="volatilidad" (change)="actualizarVolatilidadPorcentaje(0.0015)" [checked]="volatilidadPorcentaje === 0.0015" />
+      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.015; calcularTodo()" [checked]="volatilidadPorcentaje === 0.015" />
       1.5% (Experto)
     </label>
     <div>
       <label for="atr">ATR:</label>
-      <input id="atr" type="number" [(ngModel)]="atr" (input)="calcularVolatilidad()" />
+      <input id="atr" type="number" [(ngModel)]="atr" (input)="calcularTodo()" />
 
       <label for="tamanioPosicionVolatilidad">Tamaño posicion volatilidad:</label>
       <input id="tamanioPosicionVolatilidad" type="number" [value]="volatilidadCalculada || ''" readonly /> acciones
@@ -64,18 +66,19 @@
 
   <!-- Sección 3: Capital -->
   <section>
-    <h2>3 - Capital</h2><textarea>Posicion * precio = capital posicion * patrimonio</textarea>
+    <h2>3 - Capital</h2>
+    <p>Posicion * precio = capital posicion * patrimonio</p>
     <label>Capital posicion: </label>
     <label>
-      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.01)" [checked]="capitalPorcentaje === 0.01" />
+      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.01; calcularTodo()" [checked]="capitalPorcentaje === 0.01" />
       1% (Principiante)
     </label>
     <label>
-      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.02)" [checked]="capitalPorcentaje === 0.02" />
+      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.02; calcularTodo()" [checked]="capitalPorcentaje === 0.02" />
       2% (Intermedio)
     </label>
     <label>
-      <input type="radio" name="capital" (change)="actualizarCapitalPorcentaje(0.05)" [checked]="capitalPorcentaje === 0.055" />
+      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.05; calcularTodo()" [checked]="capitalPorcentaje === 0.05" />
       5% (Experto)
     </label>
     <div>
@@ -84,4 +87,3 @@
     </div>
   </section>
 </div>
-
