@@ -1,89 +1,152 @@
-<div>
-  <h1>Bienvenido al Calculador de Posiciones</h1>
+<div class="app">
 
-  <section>
-    <h2>Datos globales</h2>
-    <div>
-      <label for="patrimonio">Patrimonio dedicado</label>
-      <input id="patrimonio" type="number" [(ngModel)]="patrimonio" (input)="calcularTodo()" />
-      <label for="precioCompra">Precio de Compra:</label>
-      <input id="precioCompra" type="number" [(ngModel)]="precioCompra" (input)="calcularTodo()" />
+  <header class="app-header">
+    <div class="header-inner">
+      <h1 class="app-title">Calculador<br>de Posiciones</h1>
+      <div class="global-inputs">
+        <div class="global-field">
+          <span class="field-label">Patrimonio dedicado</span>
+          <ng-container *ngIf="!editandoPatrimonio; else modoEdicion">
+            <div class="patrimonio-display">
+              <span class="patrimonio-value">{{ patrimonio | number:'1.0-2' }} €</span>
+              <button class="btn-link" (click)="iniciarEdicion()">Cambiar</button>
+            </div>
+          </ng-container>
+          <ng-template #modoEdicion>
+            <div class="patrimonio-edit">
+              <input class="input-field" id="patrimonio" type="number" [(ngModel)]="patrimonioTemporal" />
+              <button class="btn-primary" (click)="guardarPatrimonio()">Guardar</button>
+              <button class="btn-ghost" (click)="cancelarEdicion()">Cancelar</button>
+            </div>
+          </ng-template>
+        </div>
+        <div class="global-field">
+          <label class="field-label" for="precioCompra">Precio de Compra</label>
+          <input class="input-field" id="precioCompra" type="number" [(ngModel)]="precioCompra" (input)="calcularTodo()" placeholder="0.00" />
+        </div>
+      </div>
     </div>
-  </section>
+  </header>
 
-  <!-- Sección 1: Riesgo -->
-  <section>
-    <h2>1 - Riesgo</h2>
-    <p>Posicion * medida de riesgo = Riesgo por posicion * patrimonio</p>
-    <label>Medida de riesgo: </label>
-    <label>
-      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.005; calcularTodo()" [checked]="riesgoPorcentaje === 0.005" />
-      0.5% (Principiante)
-    </label>
-    <label>
-      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.01; calcularTodo()" [checked]="riesgoPorcentaje === 0.01" />
-      1% (Intermedio)
-    </label>
-    <label>
-      <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.02; calcularTodo()" [checked]="riesgoPorcentaje === 0.02" />
-      2% (Experto)
-    </label>
+  <main class="cards-grid">
 
-    <div>
-      <label for="stop">Stop:</label>
-      <input id="stop" type="number" [(ngModel)]="stop" (input)="calcularTodo()" />
+    <!-- Sección 1: Riesgo -->
+    <section class="card" [class.card--min]="cardMinima === 'riesgo'">
+      <div class="card-header">
+        <span class="card-number">01</span>
+        <h2 class="card-title">Riesgo</h2>
+      </div>
+      <p class="card-formula">Posición × medida de riesgo = riesgo por posición × patrimonio</p>
 
-      <label for="tamanioPosicionRiesgo">Tamaño posicion riesgo:</label>
-      <input id="tamanioPosicionRiesgo" type="number" [value]="riesgoCalculado || ''" readonly /> acciones
-    </div>
-  </section>
+      <div class="field-group">
+        <span class="field-label">Medida de riesgo</span>
+        <div class="pill-group">
+          <label class="pill">
+            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.005; calcularTodo()" [checked]="riesgoPorcentaje === 0.005" tabindex="-1" />
+            <span data-tooltip="Principiante">0.5%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.01; calcularTodo()" [checked]="riesgoPorcentaje === 0.01" tabindex="-1" />
+            <span data-tooltip="Intermedio">1%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.02; calcularTodo()" [checked]="riesgoPorcentaje === 0.02" tabindex="-1" />
+            <span data-tooltip="Experto">2%</span>
+          </label>
+        </div>
+      </div>
 
-  <!-- Sección 2: Volatilidad -->
-  <section>
-    <h2>2 - Volatilidad - Rango promedio Verdadero (ATR)</h2>
-    <p>Posicion * medida volatilidad = volatilidad posicion * patrimonio</p>
-    <label>Volatilidad posicion: </label>
-    <label>
-      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.005; calcularTodo()" [checked]="volatilidadPorcentaje === 0.005" />
-      0.5% (Principiante)
-    </label>
-    <label>
-      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.0075; calcularTodo()" [checked]="volatilidadPorcentaje === 0.0075" />
-      0.75% (Intermedio)
-    </label>
-    <label>
-      <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.015; calcularTodo()" [checked]="volatilidadPorcentaje === 0.015" />
-      1.5% (Experto)
-    </label>
-    <div>
-      <label for="atr">ATR:</label>
-      <input id="atr" type="number" [(ngModel)]="atr" (input)="calcularTodo()" />
+      <div class="field-group">
+        <label class="field-label" for="stop">Stop</label>
+        <input class="input-field" id="stop" type="number" [(ngModel)]="stop" (input)="calcularTodo()" placeholder="0.00" />
+      </div>
 
-      <label for="tamanioPosicionVolatilidad">Tamaño posicion volatilidad:</label>
-      <input id="tamanioPosicionVolatilidad" type="number" [value]="volatilidadCalculada || ''" readonly /> acciones
-    </div>
-  </section>
+      <div class="result-block">
+        <span class="result-label">Tamaño posición</span>
+        <div class="result-value-row">
+          <input class="result-input" id="tamanioPosicionRiesgo" type="number" [value]="riesgoAcciones ?? ''" readonly tabindex="-1" />
+          <span class="result-unit">acciones</span>
+        </div>
+        <small class="result-exact" *ngIf="riesgoCalculado !== null"><i>({{ riesgoCalculado | number:'1.2-4' }})</i></small>
+      </div>
+    </section>
 
-  <!-- Sección 3: Capital -->
-  <section>
-    <h2>3 - Capital</h2>
-    <p>Posicion * precio = capital posicion * patrimonio</p>
-    <label>Capital posicion: </label>
-    <label>
-      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.01; calcularTodo()" [checked]="capitalPorcentaje === 0.01" />
-      1% (Principiante)
-    </label>
-    <label>
-      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.02; calcularTodo()" [checked]="capitalPorcentaje === 0.02" />
-      2% (Intermedio)
-    </label>
-    <label>
-      <input type="radio" name="capital" (change)="capitalPorcentaje = 0.05; calcularTodo()" [checked]="capitalPorcentaje === 0.05" />
-      5% (Experto)
-    </label>
-    <div>
-      <label for="tamanioPosicionCapital">Tamaño posicion capital:</label>
-      <input id="tamanioPosicionCapital" type="number" [value]="capitalCalculado || ''" readonly /> acciones
-    </div>
-  </section>
+    <!-- Sección 2: Volatilidad -->
+    <section class="card" [class.card--min]="cardMinima === 'volatilidad'">
+      <div class="card-header">
+        <span class="card-number">02</span>
+        <h2 class="card-title">Volatilidad <span class="card-subtitle">ATR</span></h2>
+      </div>
+      <p class="card-formula">Posición × medida de volatilidad = volatilidad posición × patrimonio</p>
+
+      <div class="field-group">
+        <span class="field-label">Volatilidad posición</span>
+        <div class="pill-group">
+          <label class="pill">
+            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.005; calcularTodo()" [checked]="volatilidadPorcentaje === 0.005" tabindex="-1" />
+            <span data-tooltip="Principiante">0.5%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.0075; calcularTodo()" [checked]="volatilidadPorcentaje === 0.0075" tabindex="-1" />
+            <span data-tooltip="Intermedio">0.75%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.015; calcularTodo()" [checked]="volatilidadPorcentaje === 0.015" tabindex="-1" />
+            <span data-tooltip="Experto">1.5%</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="atr">ATR</label>
+        <input class="input-field" id="atr" type="number" [(ngModel)]="atr" (input)="calcularTodo()" placeholder="0.00" />
+      </div>
+
+      <div class="result-block">
+        <span class="result-label">Tamaño posición</span>
+        <div class="result-value-row">
+          <input class="result-input" id="tamanioPosicionVolatilidad" type="number" [value]="volatilidadAcciones ?? ''" readonly tabindex="-1" />
+          <span class="result-unit">acciones</span>
+        </div>
+        <small class="result-exact" *ngIf="volatilidadCalculada !== null"><i>({{ volatilidadCalculada | number:'1.2-4' }})</i></small>
+      </div>
+    </section>
+
+    <!-- Sección 3: Capital -->
+    <section class="card" [class.card--min]="cardMinima === 'capital'">
+      <div class="card-header">
+        <span class="card-number">03</span>
+        <h2 class="card-title">Capital</h2>
+      </div>
+      <p class="card-formula">Posición × precio = capital posición × patrimonio</p>
+
+      <div class="field-group">
+        <span class="field-label">Capital posición</span>
+        <div class="pill-group">
+          <label class="pill">
+            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.01; calcularTodo()" [checked]="capitalPorcentaje === 0.01" tabindex="-1" />
+            <span data-tooltip="Principiante">1%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.02; calcularTodo()" [checked]="capitalPorcentaje === 0.02" tabindex="-1" />
+            <span data-tooltip="Intermedio">2%</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.05; calcularTodo()" [checked]="capitalPorcentaje === 0.05" tabindex="-1" />
+            <span data-tooltip="Experto">5%</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="result-block">
+        <span class="result-label">Tamaño posición</span>
+        <div class="result-value-row">
+          <input class="result-input" id="tamanioPosicionCapital" type="number" [value]="capitalAcciones ?? ''" readonly tabindex="-1" />
+          <span class="result-unit">acciones</span>
+        </div>
+        <small class="result-exact" *ngIf="capitalCalculado !== null"><i>({{ capitalCalculado | number:'1.2-4' }})</i></small>
+      </div>
+    </section>
+
+  </main>
 </div>

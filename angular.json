@@ -17,7 +17,12 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "outputHashing": "all",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "optimization": {
+              "fonts": {
+                "inline": false
+              }
+            },
+            "assets": ["src/favicon.ico", "src/assets", "src/config.php"],
             "styles": ["src/styles.css"],
             "scripts": []
           }
