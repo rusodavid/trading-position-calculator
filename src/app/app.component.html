@@ -4,15 +4,16 @@
     <div class="header-inner">
       <h1 class="app-title">Calculador<br>de Posiciones</h1>
       <div class="global-inputs">
+
         <div class="global-field">
           <span class="field-label">Patrimonio dedicado</span>
-          <ng-container *ngIf="!editandoPatrimonio; else modoEdicion">
+          <ng-container *ngIf="!editandoPatrimonio; else modoEdicionPatrimonio">
             <div class="patrimonio-display">
               <span class="patrimonio-value">{{ patrimonio | number:'1.0-2' }} €</span>
               <button class="btn-link" (click)="iniciarEdicion()">Cambiar</button>
             </div>
           </ng-container>
-          <ng-template #modoEdicion>
+          <ng-template #modoEdicionPatrimonio>
             <div class="patrimonio-edit">
               <input class="input-field" id="patrimonio" type="number" [(ngModel)]="patrimonioTemporal" />
               <button class="btn-primary" (click)="guardarPatrimonio()">Guardar</button>
@@ -20,10 +21,38 @@
             </div>
           </ng-template>
         </div>
+
         <div class="global-field">
           <label class="field-label" for="precioCompra">Precio de Compra</label>
           <input class="input-field" id="precioCompra" type="number" [(ngModel)]="precioCompra" (input)="calcularTodo()" placeholder="0.00" />
         </div>
+
+        <div class="global-field">
+          <span class="field-label">Nivel de experiencia</span>
+          <ng-container *ngIf="!editandoNivel; else modoEdicionNivel">
+            <div class="patrimonio-display">
+              <span class="patrimonio-value nivel-value">{{ nivelLabel }}</span>
+              <button class="btn-link" (click)="iniciarEdicionNivel()">Cambiar</button>
+            </div>
+          </ng-container>
+          <ng-template #modoEdicionNivel>
+            <div class="nivel-edit">
+              <div class="pill-group">
+                <label class="pill" (click)="seleccionarNivel('principiante')">
+                  <span [class.pill--active]="nivel === 'principiante'">Principiante</span>
+                </label>
+                <label class="pill" (click)="seleccionarNivel('intermedio')">
+                  <span [class.pill--active]="nivel === 'intermedio'">Intermedio</span>
+                </label>
+                <label class="pill" (click)="seleccionarNivel('experto')">
+                  <span [class.pill--active]="nivel === 'experto'">Experto</span>
+                </label>
+              </div>
+              <button class="btn-ghost" (click)="cancelarEdicionNivel()">Cancelar</button>
+            </div>
+          </ng-template>
+        </div>
+
       </div>
     </div>
   </header>
@@ -38,22 +67,10 @@
       </div>
       <p class="card-formula">Posición × medida de riesgo = riesgo por posición × patrimonio</p>
 
-      <div class="field-group">
-        <span class="field-label">Medida de riesgo</span>
-        <div class="pill-group">
-          <label class="pill">
-            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.005; calcularTodo()" [checked]="riesgoPorcentaje === 0.005" tabindex="-1" />
-            <span data-tooltip="Principiante">0.5%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.01; calcularTodo()" [checked]="riesgoPorcentaje === 0.01" tabindex="-1" />
-            <span data-tooltip="Intermedio">1%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="riesgo" (change)="riesgoPorcentaje = 0.02; calcularTodo()" [checked]="riesgoPorcentaje === 0.02" tabindex="-1" />
-            <span data-tooltip="Experto">2%</span>
-          </label>
-        </div>
+      <div class="level-indicators">
+        <span class="level-badge" [class.level-badge--active]="nivel === 'principiante'" data-tooltip="Principiante">0.5%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'intermedio'" data-tooltip="Intermedio">1%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'experto'" data-tooltip="Experto">2%</span>
       </div>
 
       <div class="field-group">
@@ -79,22 +96,10 @@
       </div>
       <p class="card-formula">Posición × medida de volatilidad = volatilidad posición × patrimonio</p>
 
-      <div class="field-group">
-        <span class="field-label">Volatilidad posición</span>
-        <div class="pill-group">
-          <label class="pill">
-            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.005; calcularTodo()" [checked]="volatilidadPorcentaje === 0.005" tabindex="-1" />
-            <span data-tooltip="Principiante">0.5%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.0075; calcularTodo()" [checked]="volatilidadPorcentaje === 0.0075" tabindex="-1" />
-            <span data-tooltip="Intermedio">0.75%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="volatilidad" (change)="volatilidadPorcentaje = 0.015; calcularTodo()" [checked]="volatilidadPorcentaje === 0.015" tabindex="-1" />
-            <span data-tooltip="Experto">1.5%</span>
-          </label>
-        </div>
+      <div class="level-indicators">
+        <span class="level-badge" [class.level-badge--active]="nivel === 'principiante'" data-tooltip="Principiante">0.5%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'intermedio'" data-tooltip="Intermedio">0.75%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'experto'" data-tooltip="Experto">1.5%</span>
       </div>
 
       <div class="field-group">
@@ -120,22 +125,10 @@
       </div>
       <p class="card-formula">Posición × precio = capital posición × patrimonio</p>
 
-      <div class="field-group">
-        <span class="field-label">Capital posición</span>
-        <div class="pill-group">
-          <label class="pill">
-            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.01; calcularTodo()" [checked]="capitalPorcentaje === 0.01" tabindex="-1" />
-            <span data-tooltip="Principiante">1%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.02; calcularTodo()" [checked]="capitalPorcentaje === 0.02" tabindex="-1" />
-            <span data-tooltip="Intermedio">2%</span>
-          </label>
-          <label class="pill">
-            <input type="radio" name="capital" (change)="capitalPorcentaje = 0.05; calcularTodo()" [checked]="capitalPorcentaje === 0.05" tabindex="-1" />
-            <span data-tooltip="Experto">5%</span>
-          </label>
-        </div>
+      <div class="level-indicators">
+        <span class="level-badge" [class.level-badge--active]="nivel === 'principiante'" data-tooltip="Principiante">1%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'intermedio'" data-tooltip="Intermedio">2%</span>
+        <span class="level-badge" [class.level-badge--active]="nivel === 'experto'" data-tooltip="Experto">5%</span>
       </div>
 
       <div class="result-block">

@@ -3,8 +3,17 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
+type Nivel = 'principiante' | 'intermedio' | 'experto';
+
 const DEFAULT_PATRIMONIO = 75000;
+const DEFAULT_NIVEL: Nivel = 'principiante';
 const CONFIG_URL = 'config.php';
+
+const PORCENTAJES: Record<Nivel, { riesgo: number; volatilidad: number; capital: number }> = {
+  principiante: { riesgo: 0.005,  volatilidad: 0.005,  capital: 0.01 },
+  intermedio:   { riesgo: 0.01,   volatilidad: 0.0075, capital: 0.02 },
+  experto:      { riesgo: 0.02,   volatilidad: 0.015,  capital: 0.05 },
+};
 
 @Component({
   selector: 'app-root',
@@ -20,24 +29,28 @@ export class AppComponent implements OnInit {
   patrimonioTemporal: number | null = null;
   editandoPatrimonio: boolean = false;
 
-  riesgoPorcentaje: number = 0.005;
+  nivel: Nivel = DEFAULT_NIVEL;
+  editandoNivel: boolean = false;
+
+  riesgoPorcentaje: number = PORCENTAJES[DEFAULT_NIVEL].riesgo;
   precioCompra: number | null = null;
   stop: number | null = null;
   riesgoCalculado: number | null = null;
 
-  volatilidadPorcentaje: number = 0.005;
+  volatilidadPorcentaje: number = PORCENTAJES[DEFAULT_NIVEL].volatilidad;
   atr: number | null = null;
   volatilidadCalculada: number | null = null;
 
-  capitalPorcentaje: number = 0.01;
+  capitalPorcentaje: number = PORCENTAJES[DEFAULT_NIVEL].capital;
   capitalCalculado: number | null = null;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<{ patrimonio: number }>(CONFIG_URL).subscribe({
+    this.http.get<{ patrimonio: number; nivel: Nivel }>(CONFIG_URL).subscribe({
       next: (data) => {
         this.patrimonio = data.patrimonio;
+        this.aplicarNivel(data.nivel ?? DEFAULT_NIVEL);
         this.calcularTodo();
       },
       error: () => {
@@ -47,6 +60,11 @@ export class AppComponent implements OnInit {
     });
   }
 
+  get nivelLabel(): string {
+    return this.nivel.charAt(0).toUpperCase() + this.nivel.slice(1);
+  }
+
+  // Patrimonio
   iniciarEdicion(): void {
     this.patrimonioTemporal = this.patrimonio;
     this.editandoPatrimonio = true;
@@ -68,6 +86,34 @@ export class AppComponent implements OnInit {
     this.calcularTodo();
   }
 
+  // Nivel
+  iniciarEdicionNivel(): void {
+    this.editandoNivel = true;
+  }
+
+  cancelarEdicionNivel(): void {
+    this.editandoNivel = false;
+  }
+
+  seleccionarNivel(nuevo: Nivel): void {
+    if (nuevo === this.nivel) { this.editandoNivel = false; return; }
+    const label = nuevo.charAt(0).toUpperCase() + nuevo.slice(1);
+    const confirmado = confirm(`¿Confirmas cambiar el nivel de experiencia a ${label}?`);
+    if (!confirmado) return;
+    this.aplicarNivel(nuevo);
+    this.editandoNivel = false;
+    this.http.post(CONFIG_URL, { nivel: this.nivel }).subscribe();
+    this.calcularTodo();
+  }
+
+  private aplicarNivel(nivel: Nivel): void {
+    this.nivel = nivel;
+    this.riesgoPorcentaje = PORCENTAJES[nivel].riesgo;
+    this.volatilidadPorcentaje = PORCENTAJES[nivel].volatilidad;
+    this.capitalPorcentaje = PORCENTAJES[nivel].capital;
+  }
+
+  // Resultados
   get cardMinima(): 'riesgo' | 'volatilidad' | 'capital' | null {
     if (this.riesgoAcciones === null || this.volatilidadAcciones === null || this.capitalAcciones === null) {
       return null;

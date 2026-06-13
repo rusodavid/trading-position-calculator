@@ -69,6 +69,17 @@
   gap: 0.5rem;
 }
 
+.nivel-value {
+  font-size: 1.2rem;
+}
+
+.nivel-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 /* Inputs */
 .input-field {
   font-family: 'Outfit', sans-serif;
@@ -295,10 +306,74 @@
   color: #2D6A8F;
 }
 
-.pill input[type="radio"]:checked + span {
+.pill input[type="radio"]:checked + span,
+.pill span.pill--active {
   background: #2D6A8F;
   border-color: #2D6A8F;
   color: #FFFFFF;
+}
+
+/* Level indicators */
+.level-indicators {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.level-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.3rem 0.65rem;
+  border-radius: 100px;
+  border: 1.5px solid #E2E0D8;
+  color: #B0AEA8;
+  background: #FAFAF7;
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+}
+
+.level-badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1C1B1A;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.25rem 0.55rem;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.level-badge::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1C1B1A;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.level-badge:hover::after,
+.level-badge:hover::before {
+  opacity: 1;
+}
+
+.level-badge--active {
+  border-color: #2D6A8F;
+  color: #2D6A8F;
+  background: rgba(45, 106, 143, 0.07);
+  font-weight: 600;
 }
 
 /* Result */
