@@ -100,6 +100,10 @@
   -webkit-appearance: none;
 }
 
+.input-field::placeholder {
+  color: #C8C6BF;
+}
+
 .input-field:focus {
   border-color: #2D6A8F;
   box-shadow: 0 0 0 3px rgba(45, 106, 143, 0.1);
