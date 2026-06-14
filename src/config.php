@@ -21,5 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     $data = file_exists($file) ? json_decode(file_get_contents($file), true) : $default;
     if (!isset($data['nivel'])) $data['nivel'] = 'principiante';
-    echo json_encode($data);
+    // tws_url es opcional: si no está en data.json, el cliente usa window.location.hostname:8765
+    $response = ['patrimonio' => $data['patrimonio'], 'nivel' => $data['nivel']];
+    if (isset($data['tws_url'])) $response['tws_url'] = $data['tws_url'];
+    echo json_encode($response);
 }

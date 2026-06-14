@@ -6,6 +6,27 @@
       <div class="global-inputs">
 
         <div class="global-field">
+          <label class="field-label" for="ticker">Ticker</label>
+          <div class="ticker-row">
+            <input class="input-field input-ticker" id="ticker" type="text"
+              [(ngModel)]="ticker"
+              (keyup.enter)="analizarTicker()"
+              placeholder="Ej: NVDA"
+              [disabled]="analizando" />
+            <button class="btn-primary btn-analizar" (click)="analizarTicker()" [disabled]="analizando || !ticker.trim()">
+              <span *ngIf="!analizando">Analizar</span>
+              <span *ngIf="analizando">···</span>
+            </button>
+          </div>
+          <small class="ticker-info" *ngIf="tickerActivo && !analizando && !errorTicker">
+            <strong>{{ tickerActivo }}</strong>
+            <ng-container *ngIf="nombreEmpresa"> · {{ nombreEmpresa }}</ng-container>
+            <ng-container *ngIf="fechaDatos"> · {{ fechaDatos }}</ng-container>
+          </small>
+          <small class="ticker-error" *ngIf="errorTicker">{{ errorTicker }}</small>
+        </div>
+
+        <div class="global-field">
           <span class="field-label">Patrimonio dedicado</span>
           <ng-container *ngIf="!editandoPatrimonio; else modoEdicionPatrimonio">
             <div class="patrimonio-display">
@@ -15,8 +36,10 @@
           </ng-container>
           <ng-template #modoEdicionPatrimonio>
             <div class="patrimonio-edit">
-              <input class="input-field" id="patrimonio" type="number" [(ngModel)]="patrimonioTemporal" />
-              <button class="btn-primary" (click)="guardarPatrimonio()">Guardar</button>
+              <input class="input-field" id="patrimonio" type="number" [(ngModel)]="patrimonioTemporal"
+                [class.input-field--error]="patrimonioTemporal !== null && patrimonioTemporal <= 0" />
+              <button class="btn-primary" (click)="guardarPatrimonio()"
+                [disabled]="!patrimonioTemporal || patrimonioTemporal <= 0">Guardar</button>
               <button class="btn-ghost" (click)="cancelarEdicion()">Cancelar</button>
             </div>
           </ng-template>
@@ -75,7 +98,11 @@
 
       <div class="field-group">
         <label class="field-label" for="stop">Stop</label>
-        <input class="input-field" id="stop" type="number" [(ngModel)]="stop" (input)="calcularTodo()" placeholder="0.00" />
+        <input class="input-field" id="stop" type="number" [(ngModel)]="stop" (input)="calcularTodo()" placeholder="0.00"
+          [class.input-field--error]="stop !== null && precioCompra !== null && stop >= precioCompra" />
+        <small class="input-warning" *ngIf="stop !== null && precioCompra !== null && stop >= precioCompra">
+          El stop debe ser menor que el precio de compra
+        </small>
       </div>
 
       <div class="result-block">

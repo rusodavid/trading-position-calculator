@@ -25,6 +25,15 @@ const PORCENTAJES: Record<Nivel, { riesgo: number; volatilidad: number; capital:
 export class AppComponent implements OnInit {
   title = 'trading-position-calculator';
 
+  private analizarUrl: string = `${window.location.protocol}//${window.location.hostname}:8765/analizar`;
+
+  ticker: string = '';
+  analizando: boolean = false;
+  errorTicker: string | null = null;
+  tickerActivo: string | null = null;
+  nombreEmpresa: string | null = null;
+  fechaDatos: string | null = null;
+
   patrimonio: number | null = DEFAULT_PATRIMONIO;
   patrimonioTemporal: number | null = null;
   editandoPatrimonio: boolean = false;
@@ -47,10 +56,11 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<{ patrimonio: number; nivel: Nivel }>(CONFIG_URL).subscribe({
+    this.http.get<{ patrimonio: number; nivel: Nivel; tws_url?: string }>(CONFIG_URL).subscribe({
       next: (data) => {
         this.patrimonio = data.patrimonio;
         this.aplicarNivel(data.nivel ?? DEFAULT_NIVEL);
+        if (data.tws_url) this.analizarUrl = `${data.tws_url}/analizar`;
         this.calcularTodo();
       },
       error: () => {
@@ -76,7 +86,7 @@ export class AppComponent implements OnInit {
   }
 
   guardarPatrimonio(): void {
-    if (this.patrimonioTemporal === null) return;
+    if (this.patrimonioTemporal === null || this.patrimonioTemporal <= 0) return;
     const confirmado = confirm(`¿Confirmas cambiar el patrimonio dedicado a ${this.patrimonioTemporal.toLocaleString('es-ES')} €?`);
     if (!confirmado) return;
     this.patrimonio = this.patrimonioTemporal;
@@ -143,7 +153,7 @@ export class AppComponent implements OnInit {
   }
 
   calcularRiesgo(): void {
-    if (this.patrimonio !== null && this.precioCompra !== null && this.stop !== null) {
+    if (this.patrimonio !== null && this.precioCompra !== null && this.stop !== null && this.precioCompra > this.stop) {
       this.riesgoCalculado = (this.patrimonio * this.riesgoPorcentaje) / (this.precioCompra - this.stop);
     } else {
       this.riesgoCalculado = null;
@@ -164,5 +174,30 @@ export class AppComponent implements OnInit {
     } else {
       this.capitalCalculado = null;
     }
+  }
+
+  // Ticker / TWS
+  analizarTicker(): void {
+    const symbol = this.ticker.trim().toUpperCase();
+    if (!symbol) return;
+    this.analizando = true;
+    this.errorTicker = null;
+    this.http.get<{ cierre: number; atr_14: number; fecha: string; nombre?: string }>(`${this.analizarUrl}/${symbol}`).subscribe({
+      next: (data) => {
+        this.precioCompra = data.cierre;
+        this.atr = data.atr_14;
+        this.tickerActivo = symbol;
+        this.fechaDatos = data.fecha ?? null;
+        this.nombreEmpresa = data.nombre ?? null;
+        this.analizando = false;
+        this.calcularTodo();
+      },
+      error: (err) => {
+        this.errorTicker = err.error?.error ?? 'Error conectando con TWS';
+        this.nombreEmpresa = null;
+        this.fechaDatos = null;
+        this.analizando = false;
+      }
+    });
   }
 }
